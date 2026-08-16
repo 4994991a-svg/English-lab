@@ -20,9 +20,13 @@ export default async function handler(req, res) {
 const { prompt } = body;
 
 if (!prompt) {
-    return res.status(400).json({
-        error: "Missing prompt",
-    });
+  return res.status(400).json({
+    error: "Missing prompt",
+    debug: {
+      bodyType: typeof req.body,
+      body: body
+    }
+  });
 }
 
     const response = await openai.responses.create({

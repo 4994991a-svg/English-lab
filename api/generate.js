@@ -12,13 +12,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { prompt } = req.body || {};
+    const body =
+    typeof req.body === "string"
+        ? JSON.parse(req.body)
+        : (req.body || {});
 
-    if (!prompt) {
-      return res.status(400).json({
+const { prompt } = body;
+
+if (!prompt) {
+    return res.status(400).json({
         error: "Missing prompt",
-      });
-    }
+    });
+}
 
     const response = await openai.responses.create({
       model: "gpt-5.6",

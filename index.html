@@ -138,13 +138,43 @@ function answer(o){
  result.className="result "+(ok?"good":"bad"); result.style.display="block"; renderStats();
 }
 async function aiCard(){
- const x=words[idx]; const box=document.getElementById("aiOutput");
- box.style.display="block"; box.textContent="AI 正在生成新的学习材料…";
- try{
-   const r=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({word:x.w,task:"word_card"})});
-   const d=await r.json(); if(!r.ok) throw new Error(d.error||"请求失败");
-   box.innerHTML=`<b>AI definition</b><br>${d.definition}<br><br><b>Collocations</b><br>${(d.collocations||[]).join(" · ")}<br><br><b>Examples</b><br>${(d.examples||[]).join("<br>")}<br><br><b>Nuance</b><br>${d.nuance||""}`;
- }catch(e){box.textContent="AI 暂时无法使用："+e.message}
+  const x=words[idx];
+  const box=document.getElementById("aiBox");
+  box.style.display="block";
+  box.textContent="AI 正在生成……";
+
+  try{
+    const prompt=`You are an English vocabulary teacher.
+
+Word: ${x.w}
+
+Give me:
+1. A clear English definition in simple English.
+2. Two natural example sentences in different contexts.
+3. A brief Chinese explanation of the word's meaning and usage.
+4. One common collocation if appropriate.
+
+Do not repeat the original article context. Use completely different everyday or academic contexts.
+
+Format the answer clearly with headings.`;
+
+    const r=await fetch("/api/generate",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({prompt})
+    });
+
+    const d=await r.json();
+
+    if(!r.ok) throw new Error(d.error||"API error");
+
+    box.innerHTML=d.text||"AI 没有返回内容。";
+  }catch(e){
+    console.error(e);
+    box.textContent="AI 暂时无法使用，请稍后再试。";
+  }
 }
 async function aiQuiz(){
  const x=words[idx]; const box=document.getElementById("aiOutput");

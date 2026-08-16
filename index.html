@@ -158,13 +158,15 @@ Do not repeat the original article context. Use completely different everyday or
 
 Format the answer clearly with headings.`;
 
-    const r=await fetch("/api/generate",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({prompt})
-    });
+    const r = await fetch("/api/generate", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    prompt: prompt
+  })
+});
 
     const d=await r.json();
 
